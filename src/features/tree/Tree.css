@@ -1,12 +1,15 @@
 .child__box{
+    border-left: 2px lightgreen dashed;
     width: 600px;
     margin-top: 15px;
 }
+
 .child{
     display: block;
     margin-left: 50px;
     width: 400px;
 }
+
 .element__content{
     text-align: start;
     border: aqua solid 2px;
