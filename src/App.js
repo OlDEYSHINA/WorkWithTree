@@ -1,10 +1,9 @@
-import React from 'react';
 import { Tree} from "./features/tree/Tree";
 import "./features/tree/Tree.css";
 import './App.css';
 
 function App() {
-  return (
+    return (
     <div className="App">
       <header className="App-header">
           <Tree/>

@@ -1,18 +1,21 @@
-import React, {useState} from 'react';
+import React from 'react';
+import {useDispatch, useSelector} from "react-redux";
+import {setSelectedId} from "./redux/treeReducer";
 
-const TreeItem = ({elements, currentId, setCurrent}) => {
-    console.log('Rendered item id - ' + currentId)
-    const currentElement = elements.find(x => x.id === currentId);
-    const child = elements.filter(y => y.parentId === currentElement.id);
-    
+const TreeItem = ({currentId}) => {
+
+    const dispatch = useDispatch()
+    const element = useSelector(state => state.tree.value[currentId])
+
     return (
         <div>
-            <div style={{backgroundColor: currentElement.color}} onClick={() => setCurrent(currentElement.id)} className="element__content">
-                <strong>{currentElement.id} {currentElement.title}</strong>
+            <div style={{backgroundColor: element.color}} onClick={() => dispatch(setSelectedId(currentId))} className="element__content">
+                <strong>{element.id} {element.title}</strong>
             </div>
             <div className="child__box">
                 <div className="child">
-                    {child.map((i, n) => <TreeItem elements={elements} setCurrent={setCurrent} currentId={i.id} key={i.id}/>)}
+                    {
+                        element.child.map((i) => <TreeItem currentId={i} key={i}/>)}
                 </div>
             </div>
         </div>
