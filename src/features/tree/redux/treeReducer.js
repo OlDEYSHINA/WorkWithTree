@@ -30,7 +30,31 @@ export const treeSlice = createSlice({
             state.value[state.selectedId].child.push(state.lastId)
         },
         edit: (state, action) => {
-            state.value[state.selectedId].title = action.payload
+
+            console.log(state.value[state.selectedId])
+            if(action.payload.id){
+                if(state.value.hasOwnProperty(action.payload.id)){
+                    alert("Данный ID занят")
+                    return;
+                }
+
+                const element = state.value[state.selectedId]
+                delete state.value[state.selectedId]
+                state.value[action.payload.id] = {
+                    title: action.payload.title,
+                    child: element.child,
+                    parentId: element.parentId,
+                    color: element.color}
+
+                const index = state.value[element.parentId].child.indexOf(state.selectedId)
+                state.value[element.parentId].child.splice(index,1)
+                state.value[element.parentId].child.push(action.payload.id)
+                state.selectedId = action.payload.id
+                console.log(state.selectedId + " to " + action.payload.id)
+            }
+            else {
+                state.value[state.selectedId].title = action.payload.title
+            }
         },
         remove: (state) => {
             const element = state.value[state.selectedId]

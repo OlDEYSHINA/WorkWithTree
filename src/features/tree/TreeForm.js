@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {useDispatch} from "react-redux";
 import {add, edit, remove, reset} from "./redux/treeReducer";
 
-const TreeForm = () => {
+const TreeForm = ({setDebug, debugState}) => {
 
     //#region Properties
 
@@ -10,6 +10,9 @@ const TreeForm = () => {
     const [isEnableCreator, setEnableCreator] = useState("none")
 
     const [title, setTitle] = useState("")
+    const [id, setId] = useState("")
+
+    const [checkDebug, setCheckDebug] = useState(false);
 
     //#endregion Properties
 
@@ -42,7 +45,8 @@ const TreeForm = () => {
 
     const beginEditElement = (e) => {
         e.preventDefault()
-        setTitle("")
+        setId('')
+        setTitle('')
         setEnableCreator("none")
         setEnableEditor("block")        
     }
@@ -56,7 +60,7 @@ const TreeForm = () => {
             return
         }
 
-        dispatch(edit(title))
+        dispatch(edit({title, id}))
         setEnableEditor("none")
     }
 
@@ -73,26 +77,44 @@ const TreeForm = () => {
         setTitle( '')
     }
 
+    const debugChanger = () => {
+        setCheckDebug(!checkDebug)
+        if(checkDebug){
+            setDebug("none")
+        }
+        else {
+            setDebug("inline")
+        }
+    }
+
     const dispatch = useDispatch()
 
     return (
         <div>
             <div style={{display: isEnableEditor, border: "2px red dotted", paddingBottom: "5px", backgroundColor: "lightsalmon"}}>
-                <a>Новое именование</a> 
+                <a>Редактирование</a>
                 <br/>
+                <input
+                    style={{display: debugState, width: 80, marginRight: 5}}
+                    value={id}
+                    onChange={e => setId(e.target.value)}
+                    type="number"
+                    placeholder="Новый ID"
+                />
                 <input
                     value={title}
                     onChange={e => setTitle(e.target.value)}
                     type="text"
                     placeholder="Новое именование"
                 />
+                <a style={{display: debugState, fontSize: 12}}> Подгрузка параметров ещё не сделана</a>
                 <br/>
                 <button style={{marginRight: 20}} onClick={cancelEditElement}>Отмена</button>
                 <button onClick={finishEditElement}>Подтвердить</button>
             </div>
 
             <div style={{display: isEnableCreator, border: "2px red dotted", paddingBottom: "5px", backgroundColor: "lightgreen"}}>
-                <a>Название</a>
+                <a>Создание</a>
                 <br/>
                 <input
                     value={title}
@@ -110,7 +132,15 @@ const TreeForm = () => {
                 <button onClick={beginEditElement} style={{marginLeft: 10, marginRight: 10}}> Изменить выбранный</button>
                 <button onClick={removeElement}>Удалить элемент(ы)</button>
             </div>
-            <button onClick={()=> dispatch(reset())}>Восстановить исходные данные</button>
+            <div>
+                <button onClick={()=> dispatch(reset())}>Восстановить исходные данные</button>
+            </div>
+            <div>
+                 <p style={{fontSize: 14}}>
+                     <input onChange={debugChanger}  checked={checkDebug} type={"checkbox"}/>
+                     Включить режим отладки
+                 </p>
+            </div>
         </div>
     );
 };
