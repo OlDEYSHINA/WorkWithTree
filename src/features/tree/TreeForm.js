@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {useDispatch} from "react-redux";
-import {add, edit, remove, reset} from "./redux/treeReducer";
+import {add, edit, exportToJson, importFromJson, remove, reset} from "./redux/treeReducer";
 
 const TreeForm = ({setDebug, debugState}) => {
 
@@ -38,7 +38,6 @@ const TreeForm = ({setDebug, debugState}) => {
     const cancelCreateElement = (e) => {
         e.preventDefault()
         setEnableCreator("none")
-
     }
 
     //#region EditElement
@@ -87,10 +86,31 @@ const TreeForm = ({setDebug, debugState}) => {
         }
     }
 
+    const loadFile = (e) => {
+        if(e.target.files.length == 0){
+            return;
+        }
+
+        try
+        {
+            const fileReader = new FileReader();
+
+            fileReader.onloadend = (e) => {
+                dispatch(importFromJson(JSON.parse(e.target.result)))
+            }
+            fileReader.readAsText(e.target.files[0], "UTF-8")
+
+        }
+        catch
+        {
+            alert("Некорректный файл")
+        }
+    }
+
     const dispatch = useDispatch()
 
     return (
-        <div>
+        <div style={{border: "2mm coral ridge", backgroundColor: "wheat"}}>
             <div style={{display: isEnableEditor, border: "2px red dotted", paddingBottom: "5px", backgroundColor: "lightsalmon"}}>
                 <a>Редактирование</a>
                 <br/>
@@ -131,6 +151,16 @@ const TreeForm = ({setDebug, debugState}) => {
                 <button onClick={beginCreateElement} >Создать элемент</button>
                 <button onClick={beginEditElement} style={{marginLeft: 10, marginRight: 10}}> Изменить выбранный</button>
                 <button onClick={removeElement}>Удалить элемент(ы)</button>
+            </div>
+            <div>
+                <div style={{display: "inline"}}>
+                    <p style={{fontSize: 20, margin:0}}>Импортировать</p>
+                    <input onChange={loadFile} type="file" accept=".json"/>
+                </div>
+                <div style={{display: "inline"}}>
+                    <p style={{fontSize: 20, margin:0}}>Экспортировать</p>
+                    <button onClick={()=> dispatch(exportToJson())}>Сохранить</button>
+                </div>
             </div>
             <div>
                 <button onClick={()=> dispatch(reset())}>Восстановить исходные данные</button>

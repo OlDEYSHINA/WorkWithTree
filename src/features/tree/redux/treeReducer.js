@@ -8,7 +8,7 @@ const defaultState ={
         2: {title: 'First', child: [], parentId: 1, color: "white"},
         3: {title: 'Second', child: [4,5], parentId: 1, color: "white"},
         4: {title: 'GIGA CHAD', child: [], parentId: 3, color: "white"},
-        5: {title: 'OH YEAH, MISTER CRABS', child: [], parentId: 3, color: "white"},
+        5: {title: 'Rayon Gosling', child: [], parentId: 3, color: "white"},
 }};
 
 const initialState  = {...defaultState};
@@ -57,15 +57,17 @@ export const treeSlice = createSlice({
             }
         },
         remove: (state) => {
+            if(state.selectedId == 1){
+                alert("Невозможно удалить корневой элемент")
+                return
+            }
             const element = state.value[state.selectedId]
-            const index = state.value[element.parentId].child.indexOf(element.parentId)
+            const index = state.value[element.parentId].child.indexOf(state.selectedId)
             state.value[element.parentId].child.splice(index,1)
-
             removeRecursion(state, state.selectedId)
-
+            console.log("selected id - " + state.selectedId + " and removed")
             state.selectedId = 1
             state.value[state.selectedId].color = 'aqua'
-            console.log("selected id - " + state.selectedId)
         },
         setSelectedId: (state, action) => {
             state.value[state.selectedId].color = 'white'
@@ -73,12 +75,34 @@ export const treeSlice = createSlice({
             state.value[state.selectedId].color = 'aqua'
             console.log("selected id - " + state.selectedId)
         },
-        reset: (state)=> {
+        reset: (state) => {
             state.value = defaultState.value
+            state.selectedId = 1;
+        },
+        importFromJson: (state, action) => {
+            if(!action.payload.selectedId || !action.payload.value || !action.payload.lastId){
+                alert("Неправильный формат файла")
+                return
+            }
+                    state.selectedId = action.payload.selectedId
+                    state.value = action.payload.value
+                    state.lastId = action.payload.lastId
+        },
+        exportToJson: (state) => {
+            const json =
+                `data:text/json;chatset=utf-8,${encodeURIComponent(
+                    JSON.stringify(state)
+                )}`;
+            const link = document.createElement("a");
+            link.href = json;
+            link.download = "tree.json";
+
+            link.click();
+
         }
     }
 })
 
-export const { add, reset, edit, remove, setSelectedId} = treeSlice.actions;
+export const { add, reset, edit, remove, setSelectedId, exportToJson, importFromJson} = treeSlice.actions;
 
 export default treeSlice.reducer;
